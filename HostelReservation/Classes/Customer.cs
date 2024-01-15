@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Numerics;
 using System.Reflection.Emit;
+using System.Reflection.PortableExecutable;
 using System.Text;
 using System.Threading.Tasks;
 using ConsoleTables;
@@ -24,7 +25,7 @@ namespace HostelReservation.Classes
         private string zipcode;
 
         //props
-        //public int ID { get { return id; } set { id = value; } }
+        public int ID { get { return id; } set { id = value; } }
         //public string Fname {
         //    get { return fname; }
         //    set {  fname = value; }
@@ -114,25 +115,7 @@ namespace HostelReservation.Classes
                     Console.WriteLine("Customer ID: " + customerId);
                 }
             }
-            //int ctr = DBconnection.ExecuteQueries(AddRooms);
-            //if (ctr > 0)
-            //    Console.WriteLine("\n New Customer added....\n");
-            //else
-            //    Console.WriteLine("error");
-
-            //string showAllRooms = $"select CustomerId from Customer where CustomerFullName = '{FullName}'";
-            //SqlCommand cm = new SqlCommand(showAllRooms);
-
-            //SqlDataReader reader = cm.ExecuteReader();
-            //if (reader.HasRows)
-            //{
-            //    //reader.Read();
-            //    int customerId = reader.GetInt32(0);
-            //    Console.WriteLine(customerId);
-            //}
-            //else
-            //    Console.WriteLine("No Records available in the database....\n");
-            //DBconnection.CloseConnection();
+            
         }
 
         public void Create(object CreateObj)
@@ -161,18 +144,86 @@ namespace HostelReservation.Classes
 
         public void Read(object ReadObj)
         {
-            throw new NotImplementedException();
+           using(SqlConnection con = new SqlConnection("Data Source=DESKTOP-VD76OGN\\SQLEXPRESS01;Initial Catalog=Somabay;Integrated Security=True"))
+            {
+                con.Open();
+                string selectCustoers = "select *from Customer";
+                using(SqlCommand command = new SqlCommand(selectCustoers, con))
+                {
+                    SqlDataReader reader = command.ExecuteReader();
+                    if (reader.HasRows)
+                    {
+                        while (reader.Read())
+                        {
+                            int customerid = reader.GetInt32(0);
+                            string fullname=reader.GetString(1);
+                            string city=reader.GetString(2);
+                            string phonenumber=reader.GetString(3);
+                            Console.WriteLine($"the customer id is {customerid}" +
+                                $" ,Name = {fullname} ," +
+                                $" city = {city} ," +
+                                $"phone number = {phonenumber}");
+                        }
+                    }
+                    else { Console.WriteLine("NO rows existed"); }
+                }
+                con.Close();
+            }
+
+            
         }
 
         public void Update(object UpdateObj)
         {
-            throw new NotImplementedException();
+            Customer customer = new Customer();
+            customer = (Customer)UpdateObj;
+            using (SqlConnection con = new SqlConnection("Data Source=DESKTOP-VD76OGN\\SQLEXPRESS01;Initial Catalog=Somabay;Integrated Security=True"))
+            {
+                con.Open();
+                string updateCustomer = $"update Customer set CustomerFullName='{customer.FullName}',CustomerCity='{customer.City}',CustomerPhone='{customer.Phonenumber}' where CustomerId={customer.ID}";
+                using (SqlCommand command = new SqlCommand(updateCustomer, con))
+                {
+                    SqlDataReader reader = command.ExecuteReader();
+                    Console.WriteLine("**********Updated successfull");
+                    reader.Close();
+                }
+                //string select = $"select * from Customer where CustomerId={customer.ID}";
+                //using (SqlCommand command1 = new SqlCommand(select, con))
+                //{
+                //    SqlDataReader sqlDataReader = command1.ExecuteReader();
+                //    if (sqlDataReader.HasRows)
+                //    {
+                //        int customerid = sqlDataReader.GetInt32(0);
+                //        string fullname = sqlDataReader.GetString(1);
+                //        string city = sqlDataReader.GetString(2);
+                //        string phonenumber = sqlDataReader.GetString(3);
+                //        Console.WriteLine($"the customer id is {customerid}" +
+                //            $" ,Name = {fullname} ," +
+                //            $" city = {city} ," +
+                //            $"phone number = {phonenumber}");
+                //    }
+                //    else { Console.WriteLine("not updated"); }
+                //}
+                con.Close();
+            }
         }
-
         public void Delete(object DeleteObj)
         {
-            throw new NotImplementedException();
+            Customer customer = new Customer();
+            customer = (Customer)DeleteObj;
+            using (SqlConnection con = new SqlConnection("Data Source=DESKTOP-VD76OGN\\SQLEXPRESS01;Initial Catalog=Somabay;Integrated Security=True"))
+            {
+                con.Open();
+                string deleteCustomer = $"delete from Customer where CustomerId={customer.ID}";
+                using (SqlCommand command = new SqlCommand(deleteCustomer, con))
+                {
+                    SqlDataReader reader = command.ExecuteReader();
+                    Console.WriteLine("**********Deleted successfull");
+                }
+                con.Close();
+            }
         }
+            
         //public void Update(int id,ref int top, Customer[]customers)
         //{
         //    for (int i = 0; i < top; i++) {

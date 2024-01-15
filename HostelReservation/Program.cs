@@ -30,7 +30,7 @@ namespace HostelReservation
             //Reservation.InsertReservation();
 
             Function f=new Function();
-            f.createcustomer();
+            f.updatecustomer();
 
        
         }
